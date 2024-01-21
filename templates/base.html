@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %} {% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <style>
+        body, html {
+            height: 100%;
+        }
+        .navbar-vertical {
+            height: 100%;
+            width: 200px; /* Width of the navbar */
+            position: fixed;
+            z-index: 1;
+            top: 0;
+            left: 0;
+            overflow-x: hidden;
+            padding-top: 20px;
+        }
+        .main-content {
+            margin-left: 210px; /* Same as navbar width + some padding */
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .navbar-vertical {
+                width: 100%;
+                height: auto;
+                position: relative;
+            }
+            .main-content {
+                margin-left: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<nav class="navbar-vertical bg-body-tertiary">
+    <div class="navbar-brand">
+        <img src="/static/img/the_blog.png" alt="Brand Logo" style="width: 100%;">
+    </div>
+    <ul class="navbar-nav">
+        {% if 'username' in session %}
+            <!-- Greeting for logged-in users -->
+            <div class="navbar-brand">
+                <p>Hi, {{ session['nickname'] }}</p>
+            </div>
+            <li class="nav-item"><a href="/logout" class="nav-link active"> Log Out </a></li>
+            <li class="nav-item"><a href="/create_post" class="nav-link active"> Create </a></li>
+        {% else %}
+            <li class="nav-item"><a href="/login" class="nav-link active"> Login </a></li>
+            <li class="nav-item"><a href="/register" class="nav-link active"> Register </a></li>
+        {% endif %}
+        <li class="nav-item"><a href="/" class="nav-link active">Home</a></li>
+    </ul>
+</nav>
+
+<div class="container main-content">
+    <div class="row">
+        <div class="col">
+            {% block content %}
+            {% endblock %}
+        </div>
+    </div>
+</div>
+
+<!-- Adding Bootstrap JS for any Bootstrap components that need it -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-0tvj1eBm9GUcU0zYpFJPDJY76+DgJm8JjBcZZeKSeN2F5zBfB3Z6aGm2QZ5sTJfZ"
+        crossorigin="anonymous"></script>
+
+</body>
+</html>

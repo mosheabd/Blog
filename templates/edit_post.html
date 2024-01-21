@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Post{% endblock %}
+
+{% block content %}
+<style>
+    .emoji-picker span {
+        cursor: pointer;
+        padding: 5px;
+        font-size: 20px;
+    }
+    .form-group {
+        margin-bottom: 15px;
+    }
+</style>
+
+<div class="container">
+    <h1>Edit Post</h1>
+    <form action="{{ url_for('update_post', post_id=post.id) }}" method="post">
+        <input type="hidden" name="post_id" value="{{ post.id }}">
+        <div class="form-group">
+            <label for="title">Title:</label>
+            <input type="text" class="form-control" id="title" name="title" value="{{ post.title }}" required>
+        </div>
+
+        <div class="form-group">
+            <label for="content">Content:</label>
+            <textarea class="form-control" id="content" name="content" rows="4" required>{{ post.content }}</textarea>
+        </div>
+
+        <div class="emoji-picker">
+            <span onclick="addEmoji('😀')">😀</span>
+            <span onclick="addEmoji('😂')">😂</span>
+            <span onclick="addEmoji('🤔')">🤔</span>
+            <span onclick="addEmoji('😍')">😍</span>
+            <span onclick="addEmoji('📈')">📈</span> <!-- Chart Increasing -->
+            <span onclick="addEmoji('📉')">📉</span> <!-- Chart Decreasing -->
+            <span onclick="addEmoji('💹')">💹</span> <!-- Chart with Upwards Trend and Yen Sign -->
+            <span onclick="addEmoji('💰')">💰</span> <!-- Money Bag -->
+            <span onclick="addEmoji('💸')">💸</span> <!-- Money with Wings -->
+            <span onclick="addEmoji('🚀')">🚀</span> <!-- Rocket -->
+            <span onclick="addEmoji('🌕')">🌕</span> <!-- Full Moon (used in the phrase 'to the moon') -->
+            <span onclick="addEmoji('💎')">💎</span> <!-- Diamond -->
+            <span onclick="addEmoji('🙌')">🙌</span> <!-- Raising Hands (often used for 'Diamond Hands') -->
+            <span onclick="addEmoji('🐂')">🐂</span> <!-- Bull -->
+            <span onclick="addEmoji('🐻')">🐻</span> <!-- Bear -->
+            <span onclick="addEmoji('💵')">💵</span> <!-- Dollar Banknote -->
+            <span onclick="addEmoji('🏦')">🏦</span> <!-- Bank Building -->
+        </div>
+
+        <button type="submit" class="btn btn-primary">Update Post</button>
+        <a href="{{ url_for('home') }}" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+
+<script>
+let lastFocusedElement;
+
+document.addEventListener('focusin', function(e) {
+    if (e.target.id === 'title' || e.target.id === 'content') {
+        lastFocusedElement = e.target;
+    }
+});
+
+function addEmoji(emoji) {
+    if (lastFocusedElement) {
+        lastFocusedElement.value += emoji;
+    }
+}
+</script>
+{% endblock %}
