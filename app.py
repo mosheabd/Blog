@@ -6,25 +6,27 @@ import pytz
 import yfinance as yf
 from flask_mail import Mail, Message
 from itsdangerous import URLSafeTimedSerializer
+import os
+
+
 
 # create flask instance
 app = Flask(__name__)
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY')
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL')
+app.config['MAIL_USERNAME'] = os.environ.get('MAIL_USERNAME')
+app.config['MAIL_PASSWORD'] = os.environ.get('MAIL_PASSWORD')
 
-# configuration
-app.config['SECRET_KEY'] = "my_secret_key"
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///blog.db'  # This will create the db in the project root
-# app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-# create DB instance
+app.config['MAIL_SERVER'] = os.environ.get('MAIL_SERVER')
+app.config['MAIL_PORT'] = int(os.environ.get('MAIL_PORT', 587))
+app.config['MAIL_USE_TLS'] = os.environ.get('MAIL_USE_TLS', 'True') == 'True'
+app.config['MAIL_USE_SSL'] = os.environ.get('MAIL_USE_SSL', 'False') == 'True'
+app.config['MAIL_DEFAULT_SENDER'] = os.environ.get('MAIL_DEFAULT_SENDER')
+
+
+
+# # create DB instance
 db = SQLAlchemy(app)
-
-# Flask-Mail configuration
-app.config['MAIL_SERVER'] = 'smtp.gmail.com'
-app.config['MAIL_PORT'] = 587
-app.config['MAIL_USE_TLS'] = True
-app.config['MAIL_USERNAME'] = 'bloginvestingil@gmail.com'
-app.config['MAIL_PASSWORD'] = 'aktr beup wvuu acps'
-app.config['MAIL_DEFAULT_SENDER'] = 'bloginvestingil@gmail.com'
-
 mail = Mail(app)
 
 
@@ -58,9 +60,6 @@ class Users(db.Model):
     profile_photo_url = db.Column(db.String(255))
     posts = db.relationship('Post', backref='author', lazy=True)
     is_admin = db.Column(db.Boolean, default=False, nullable=False)
-
-
-# TODO is_admin
 
 class Post(db.Model):
     def get_current_time():
@@ -136,8 +135,8 @@ def register():
         email = request.form.get('email')
         existing_email = Users.query.filter_by(email=email).first()
 
-        # if existing_email:
-        #     return render_template('register.html', message=f'E-mail {email} already exist!')
+        if existing_email:
+            return render_template('register.html', message=f'E-mail {email} already exist!')
 
         nickname = request.form.get('nickname')
 
@@ -334,7 +333,7 @@ def home():
     per_page = 4
 
     # Start with a base query
-    query = Post.query
+    query = Post.query.order_by(Post.time_created.desc())
 
     # Apply user filter if provided
     if user_filter:
